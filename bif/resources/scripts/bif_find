@@ -24,7 +24,8 @@ def _get_args():
 
 def _main():
 	args = _get_args()
-	for exposure_delta, entries in bif.find_bracketed.find_bracketed_images(args.path):
+	ba = bif.find_bracketed.BracketedAnalysis()
+	for exposure_delta, entries in ba.find_bracketed_images(args.path):
 		filenames = [os.path.basename(hi.filepath) for hi in entries]
 		print("{} {}".format(exposure_delta, filenames))
 
