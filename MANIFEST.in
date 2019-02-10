@@ -1,0 +1,3 @@
+include bif/resources/*
+include bif/resources/scripts/*
+
