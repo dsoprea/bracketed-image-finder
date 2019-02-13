@@ -126,6 +126,8 @@ class TestExposureBracketedAnalysis(unittest.TestCase):
             files = [hi.rel_filepath for hi in entries]
             actual.append((type_, files))
 
+        actual = sorted(actual)
+
         expected = [
             ('periodic', ['DSC08196.JPG', 'DSC08197.JPG', 'DSC08198.JPG', 'DSC08199.JPG', 'DSC08200.JPG']), 
             ('periodic', ['DSC08201.JPG', 'DSC08202.JPG', 'DSC08203.JPG', 'DSC08204.JPG', 'DSC08205.JPG']),

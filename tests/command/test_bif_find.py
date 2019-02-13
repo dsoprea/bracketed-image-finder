@@ -25,6 +25,8 @@ periodic images/DSC08201.JPG images/DSC08202.JPG images/DSC08203.JPG images/DSC0
     def test_run__json(self):
         cmd = [_TOOL_FILEPATH, '--json', _ASSET_PATH]
         raw = subprocess.check_output(cmd)
+        raw = raw.decode('utf-8')
+
         actual = json.loads(raw)
 
         expected = [

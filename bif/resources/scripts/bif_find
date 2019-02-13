@@ -55,6 +55,9 @@ def _main():
 
 	bracketed = ba.find_bracketed_images(args.path)
 
+	# Print the results. Sort the results in order to guarantee ordering for 
+	# the unit-tests.
+
 	if args.print_as_json is True:
 		response = []
 		for type_, entries in bracketed:
@@ -71,6 +74,8 @@ def _main():
 				'entries': entries_info,
 			})
 
+		response = sorted(response, key=lambda x: [x['type']] + [e['rel_filepath'] for e in x['entries']])
+
 		json.dump(
 			response, 
 			sys.stdout, 
@@ -80,8 +85,13 @@ def _main():
 
 		print('')
 	else:
+		flattened = []
 		for type_, entries in bracketed:
 			files = [hi.rel_filepath for hi in entries]
+			flattened.append((type_, files))
+
+		flattened = sorted(flattened)
+		for type_, files in flattened:
 			print("{} {}".format(type_, ' '.join(files)))
 
 if __name__ == '__main__':
