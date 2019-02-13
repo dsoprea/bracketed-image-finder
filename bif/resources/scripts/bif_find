@@ -53,7 +53,8 @@ def _main():
 
 	ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
 
-	bracketed = ba.find_bracketed_images(args.path)
+	root_path = args.path.rstrip(os.sep)
+	bracketed = ba.find_bracketed_images(root_path)
 
 	# Print the results. Sort the results in order to guarantee ordering for 
 	# the unit-tests.
