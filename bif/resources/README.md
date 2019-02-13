@@ -39,3 +39,78 @@ Exposure start at the current, default exposure and are followed by one or more 
 ## -, 0, +
 
 Exposures increase from a lower exposure value to a higher exposure value, where both are the same distance from the current, default exposure. Referred to as a "sequential exposure" sequence.
+
+
+# Output
+
+The output is printed either as parseable text or JSON:
+
+```
+$ bif_find tests/assets/images --
+jperiodic DSC08196.JPG DSC08197.JPG DSC08198.JPG DSC08199.JPG DSC08200.JPG
+periodic DSC08201.JPG DSC08202.JPG DSC08203.JPG DSC08204.JPG DSC08205.JPG
+
+$ bif_find tests/assets/images --json
+[
+    {
+        "entries": [
+            {
+                "exposure_value": 0.0,
+                "rel_filepath": "DSC08196.JPG",
+                "timestamp": "2019-02-13T00:31:50"
+            },
+            {
+                "exposure_value": -0.7,
+                "rel_filepath": "DSC08197.JPG",
+                "timestamp": "2019-02-13T00:31:50"
+            },
+            {
+                "exposure_value": 0.7,
+                "rel_filepath": "DSC08198.JPG",
+                "timestamp": "2019-02-13T00:31:50"
+            },
+            {
+                "exposure_value": -1.3,
+                "rel_filepath": "DSC08199.JPG",
+                "timestamp": "2019-02-13T00:31:50"
+            },
+            {
+                "exposure_value": 1.3,
+                "rel_filepath": "DSC08200.JPG",
+                "timestamp": "2019-02-13T00:31:51"
+            }
+        ],
+        "type": "periodic"
+    },
+    {
+        "entries": [
+            {
+                "exposure_value": 0.0,
+                "rel_filepath": "DSC08201.JPG",
+                "timestamp": "2019-02-13T00:32:09"
+            },
+            {
+                "exposure_value": -0.7,
+                "rel_filepath": "DSC08202.JPG",
+                "timestamp": "2019-02-13T00:32:09"
+            },
+            {
+                "exposure_value": 0.7,
+                "rel_filepath": "DSC08203.JPG",
+                "timestamp": "2019-02-13T00:32:10"
+            },
+            {
+                "exposure_value": -1.3,
+                "rel_filepath": "DSC08204.JPG",
+                "timestamp": "2019-02-13T00:32:10"
+            },
+            {
+                "exposure_value": 1.3,
+                "rel_filepath": "DSC08205.JPG",
+                "timestamp": "2019-02-13T00:32:10"
+            }
+        ],
+        "type": "periodic"
+    }
+]
+```
