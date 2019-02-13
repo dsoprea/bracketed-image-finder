@@ -49,6 +49,7 @@ def _main():
 
 	if args.verbose is True:
 		logging.basicConfig()
+		logging.getLogger().setLevel(logging.DEBUG)
 
 	ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
 
