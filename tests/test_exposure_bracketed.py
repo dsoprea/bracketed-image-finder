@@ -107,20 +107,13 @@ class TestExposureBracketedAnalysis(unittest.TestCase):
 
         self.assertTrue(ba._bracketinfo_matches(actual_bi, expected_bi))
 
-    def test_read_tag(self):
-        filepath = os.path.join(_ASSET_PATH, 'images', 'DSC08198.JPG')
+    def test_read_image_metadata(self):
         ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
-        value = ba._read_tag(filepath, bif.exposure_bracketed._EXPOSURE_TAG_ID)
 
-        self.assertEquals(value, '0.70 EV')
-
-    def test_get_exposure(self):
         filepath = os.path.join(_ASSET_PATH, 'images', 'DSC08198.JPG')
-        
-        ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
-        exposure_value = ba._get_exposure(filepath)
+        metadata = ba._read_image_metadata(filepath)
 
-        self.assertEquals(exposure_value, 0.70)
+        self.assertEquals(metadata['exposure_value'], 0.70)
 
     def test_find_bracketed_images(self):
         root_path = os.path.join(_ASSET_PATH, 'images')

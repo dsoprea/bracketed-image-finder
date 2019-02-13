@@ -6,6 +6,8 @@ import re
 import collections
 import fnmatch
 
+import exif
+
 import dateutil.parser
 
 _EXPOSURE_TAG_ID = 0x9204
@@ -13,7 +15,15 @@ _EXPOSURE_MODE_TAG_ID = 0xa402
 _DATETIME_TAG_ID = 0x0132
 
 _IMAGE_FILESPEC = '*.jpg'
-_SONY_BRACKETING_EXPOSURE_MODE = 'Auto bracket'
+
+# 0xa402
+# 
+# Values:
+# 0: Auto exposure
+# 1: Manual exposure
+# 2: Auto bracket
+# <everything else>: Reserved
+_SONY_BRACKETING_EXPOSURE_MODE = 2
 
 # Example: 2.97 EV (f/2.8)
 _EXPOSURE_VALUE_RE = re.compile(r'(\-?[0-9]*(\.[0-9]+)?) EV$')
@@ -52,12 +62,12 @@ _BRACKET_INFO = \
         ])
 
 
-class TagNotFoundException(Exception):
+class MetadataNotFoundException(Exception):
     def __init__(self, tag_id):
         self.__tag_id = tag_id
 
         message = "Tag ({:02x}) not found.".format(tag_id)
-        super(TagNotFoundException, self).__init__(message)
+        super(MetadataNotFoundException, self).__init__(message)
 
     @property
     def tag_id(self):
@@ -65,31 +75,23 @@ class TagNotFoundException(Exception):
     
 
 class ExposureBracketedAnalysis(object):
-    def _read_tag(self, filepath, tag_id):
-        cmd = ['exif', filepath, '--tag', hex(tag_id), '--machine-readable']
+    def _read_image_metadata(self, filepath):
+        with open(filepath, 'rb') as f:
+            image_metadata = exif.Image(f)
 
         try:
-            output = subprocess.check_output(cmd)
-        except subprocess.CalledProcessError as e:
-            if e.returncode != _TAG_NOT_FOUND_ERROR:
-                raise
+            info = {
+                'timestamp': dateutil.parser.parse(image_metadata.datetime),
+                'exposure_value': image_metadata.exposure_bias_value,
+                'exposure_mode': image_metadata.exposure_mode,
+            }
+        except AttributeError as e:
+            pass
         else:
-            return output.decode('utf-8').strip()
+            return info
 
         # If we get here, the tag was not found.
-        raise TagNotFoundException(tag_id)
-
-    def _get_exposure(self, filepath):
-        exposure_value = self._read_tag(filepath, _EXPOSURE_TAG_ID)
-
-        # Expecting something like "-0.70 EV".
-        m = _EXPOSURE_VALUE_RE.match(exposure_value)
-
-        assert \
-            m is not None, \
-            "Exposure value [{}] doesn't look right.".format(exposure_value)
-
-        return float(m.group(1))
+        raise MetadataNotFoundException(tag_id)
 
     def _is_float_equal(self, a, b):
         """Account for epsilon."""
@@ -204,18 +206,13 @@ class ExposureBracketedAnalysis(object):
                 rel_filepath = filepath[root_path_len + 1:]
 
                 try:
-                    exposure_mode_value = self._read_tag(filepath, _EXPOSURE_MODE_TAG_ID)
+                    metadata = self._read_image_metadata(filepath)
 
                     # Only Sony bracketing supported at this time (for lack of 
                     # information on implementation by other brands).
-                    if exposure_mode_value != _SONY_BRACKETING_EXPOSURE_MODE:
+                    if metadata['exposure_mode'] != _SONY_BRACKETING_EXPOSURE_MODE:
                         continue
-
-                    exposure_value = self._get_exposure(filepath)
-
-                    timestamp_raw = self._read_tag(filepath, _DATETIME_TAG_ID)
-                    timestamp = dateutil.parser.parse(timestamp_raw)
-                except TagNotFoundException:
+                except MetadataNotFoundException:
                     continue
                 except AssertionError as e:
                     _LOGGER.exception("Validation issue: [{}]".format(filepath))
@@ -225,8 +222,8 @@ class ExposureBracketedAnalysis(object):
                 
                 hi = _HISTORY_ITEM(
                         rel_filepath=rel_filepath, 
-                        exposure_value=exposure_value, 
-                        timestamp=timestamp)
+                        exposure_value=metadata['exposure_value'], 
+                        timestamp=metadata['timestamp'])
 
                 _HISTORY.append(hi)
 
