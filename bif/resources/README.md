@@ -4,7 +4,7 @@
 
 # Overview
 
-Some cameras, including Sony, support taking bracketed pictures. Bracketing is an operation that rapidly takes a series of pictures with slight variations in situations where the conditions may be tricky or rapidly changing. This allows you to experiment with what the current conditions require or to save time in the present by taking a bunch of pictures that will likely include at least one good one at the expense of having to spend more time later sifting through the extra images.
+Some cameras support taking bracketed pictures. Bracketing is an operation that rapidly takes a series of pictures with slight variations in situations where the conditions may be tricky or rapidly changing. This allows you to experiment with what the current conditions require or to save time in the present by taking a bunch of pictures that will likely include at least one good one at the expense of having to spend more time later sifting through the extra images.
 
 This project will recursively scan through the JPEG images under a given path and identify sequential sequences of exposure-bracketed images.
 
@@ -22,8 +22,11 @@ The library currently identifies exposure-based bracketing.
 
 Requirements:
 
-- Consists of three, five, or seven images
-- When the filenames are sorted, the exposures of adjacent files match a known exposure sequence.
+- Images have a "exposure mode" of (2) ("auto bracketed")
+- Images consist of three, five, or seven images
+- Sorting the filenames in increasing order will also sort them in chronologically-increasing order
+
+The actual exposure deltas do not matter. Even when configured as a specific value, we have seen the effective exposures being different then expected.
 
 The library currently recognizes the following exposure sequences:
 
