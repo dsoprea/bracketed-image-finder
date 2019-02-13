@@ -21,6 +21,7 @@ setuptools.setup(
     version=version,
     description="Find groups of exposure-bracketed images",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     keywords='sony bracketing bracketed',
     author='Dustin Oprea',
     author_email='myselfasunder@gmail.com',
