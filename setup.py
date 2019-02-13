@@ -25,7 +25,7 @@ setuptools.setup(
     keywords='sony bracketing bracketed',
     author='Dustin Oprea',
     author_email='myselfasunder@gmail.com',
-    # url='https://github.com/dsoprea/GDriveFS',
+    url='https://github.com/dsoprea/bracketed_image_finder',
     license='GPL 2',
     packages=setuptools.find_packages(exclude=['tests']),
     include_package_data=True,
