@@ -11,8 +11,10 @@ This project will recursively scan through the JPEG images under a given path an
 
 # Installation
 
+This project requires Python 3. To install:
+
 ```
-$ pip install .
+$ pip install bracketed_images_finder
 ```
 
 
