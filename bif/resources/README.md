@@ -46,8 +46,8 @@ Exposures increase from a lower exposure value to a higher exposure value, where
 The output is printed either as parseable text or JSON:
 
 ```
-$ bif_find tests/assets/images --
-jperiodic DSC08196.JPG DSC08197.JPG DSC08198.JPG DSC08199.JPG DSC08200.JPG
+$ bif_find tests/assets/images
+periodic DSC08196.JPG DSC08197.JPG DSC08198.JPG DSC08199.JPG DSC08200.JPG
 periodic DSC08201.JPG DSC08202.JPG DSC08203.JPG DSC08204.JPG DSC08205.JPG
 
 $ bif_find tests/assets/images --json

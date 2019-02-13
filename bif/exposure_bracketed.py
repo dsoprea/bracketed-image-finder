@@ -10,10 +10,6 @@ import exif
 
 import dateutil.parser
 
-_EXPOSURE_TAG_ID = 0x9204
-_EXPOSURE_MODE_TAG_ID = 0xa402
-_DATETIME_TAG_ID = 0x0132
-
 _IMAGE_FILESPEC = '*.jpg'
 
 # 0xa402
@@ -25,20 +21,12 @@ _IMAGE_FILESPEC = '*.jpg'
 # <everything else>: Reserved
 _SONY_BRACKETING_EXPOSURE_MODE = 2
 
-# Example: 2.97 EV (f/2.8)
-_EXPOSURE_VALUE_RE = re.compile(r'(\-?[0-9]*(\.[0-9]+)?) EV$')
-
-_TAG_NOT_FOUND_ERROR = 1
-
 # The various number of images produced by complete bracketing processes. 
 # - These must be odd.
 # - These must be in descending order (to make sure that any larger sequences 
 #   that might contain smaller sequences are allowed to match first).
 _BRACKETING_SEQUENCE_SIZES = (7, 5, 3)
 _MAX_BRACKET_SIZE = max(_BRACKETING_SEQUENCE_SIZES)
-
-# The maximum amount of time a sequence should've been captured in.
-_MAX_ALLOW_SEQUENCE_DURATION_S = 3
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -63,16 +51,8 @@ _BRACKET_INFO = \
 
 
 class MetadataNotFoundException(Exception):
-    def __init__(self, tag_id):
-        self.__tag_id = tag_id
+    pass
 
-        message = "Tag ({:02x}) not found.".format(tag_id)
-        super(MetadataNotFoundException, self).__init__(message)
-
-    @property
-    def tag_id(self):
-        return self.__tag_id
-    
 
 class ExposureBracketedAnalysis(object):
     def _read_image_metadata(self, filepath):
@@ -91,7 +71,7 @@ class ExposureBracketedAnalysis(object):
             return info
 
         # If we get here, the tag was not found.
-        raise MetadataNotFoundException(tag_id)
+        raise MetadataNotFoundException()
 
     def _is_float_equal(self, a, b):
         """Account for epsilon."""
