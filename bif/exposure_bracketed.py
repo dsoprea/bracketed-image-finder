@@ -7,6 +7,7 @@ import collections
 import fnmatch
 
 import exif
+import tqdm
 
 import dateutil.parser
 
@@ -166,11 +167,10 @@ class ExposureBracketedAnalysis(object):
 
         return True
 
-    def find_bracketed_images(self, root_path):
-        root_path_len = len(root_path)
-
+    def find_bracketed_images(self, root_path, show_progress=False):
         _HISTORY = []
         usage_index = {}
+        image_filepaths = []
         for path, folders, files in os.walk(root_path):
             # We depend on the files`being sorted and we use that sorting the files 
             # will be them in sequence of when they were created. We do not handle 
@@ -183,57 +183,70 @@ class ExposureBracketedAnalysis(object):
                     continue
 
                 filepath = os.path.join(path, filename)
-                rel_filepath = filepath[root_path_len + 1:]
+                image_filepaths.append(filepath)
 
-                try:
-                    metadata = self._read_image_metadata(filepath)
+        root_path_len = len(root_path)
+        
+        if show_progress is True:
+            image_iter = tqdm.tqdm(image_filepaths)
+        else:
+            image_iter = image_filepaths
+        
+        for filepath in image_iter:
+            rel_filepath = filepath[root_path_len + 1:]
+            
+            if show_progress is True:
+                image_iter.set_description(rel_filepath)
 
-                    # Only Sony bracketing supported at this time (for lack of 
-                    # information on implementation by other brands).
-                    if metadata['exposure_mode'] != _SONY_BRACKETING_EXPOSURE_MODE:
-                        continue
-                except MetadataNotFoundException:
+            try:
+                metadata = self._read_image_metadata(filepath)
+
+                # Only Sony bracketing supported at this time (for lack of 
+                # information on implementation by other brands).
+                if metadata['exposure_mode'] != _SONY_BRACKETING_EXPOSURE_MODE:
                     continue
-                except AssertionError as e:
-                    _LOGGER.exception("Validation issue: [{}]".format(filepath))
-                    continue
+            except MetadataNotFoundException:
+                continue
+            except AssertionError as e:
+                _LOGGER.exception("Validation issue: [{}]".format(filepath))
+                continue
 
-                # We definitely have a picture that was involved in bracketing.
-                
-                hi = _HISTORY_ITEM(
-                        rel_filepath=rel_filepath, 
-                        exposure_value=metadata['exposure_value'], 
-                        timestamp=metadata['timestamp'])
+            # We definitely have a picture that was involved in bracketing.
+            
+            hi = _HISTORY_ITEM(
+                    rel_filepath=rel_filepath, 
+                    exposure_value=metadata['exposure_value'], 
+                    timestamp=metadata['timestamp'])
 
-                _HISTORY.append(hi)
+            _HISTORY.append(hi)
 
-                # Discard old entries.
-                if len(_HISTORY) > _MAX_BRACKET_SIZE:
-                    _HISTORY = _HISTORY[1:]
+            # Discard old entries.
+            if len(_HISTORY) > _MAX_BRACKET_SIZE:
+                _HISTORY = _HISTORY[1:]
 
-                check_fns = [
-                    self._check_for_sequential_bracketing_at_tail,
-                    self._check_for_periodic_bracketing_at_tail,
-                ]
+            check_fns = [
+                self._check_for_sequential_bracketing_at_tail,
+                self._check_for_periodic_bracketing_at_tail,
+            ]
 
-                for check_fn in check_fns:
-                    bi = check_fn(_HISTORY)
-                    if bi is not None:
-                        # If the file was matched both in smaller sequences and 
-                        # larger sequences (which happens), only remember the 
-                        # larger ones. Due to this tracking, we can't emit the 
-                        # found sequences until the end.
-                        for hi in bi.sequence:
-                            try:
-                                previous_bi = usage_index[hi.rel_filepath]
-                            except KeyError:
-                                # This file hasn't yet been found in a sequence.
+            for check_fn in check_fns:
+                bi = check_fn(_HISTORY)
+                if bi is not None:
+                    # If the file was matched both in smaller sequences and 
+                    # larger sequences (which happens), only remember the 
+                    # larger ones. Due to this tracking, we can't emit the 
+                    # found sequences until the end.
+                    for hi in bi.sequence:
+                        try:
+                            previous_bi = usage_index[hi.rel_filepath]
+                        except KeyError:
+                            # This file hasn't yet been found in a sequence.
+                            usage_index[hi.rel_filepath] = bi
+                        else:
+                            # This file has previously been found in a 
+                            # sequence; keep whichever is larger.
+                            if len(bi.sequence) > len(previous_bi.sequence):
                                 usage_index[hi.rel_filepath] = bi
-                            else:
-                                # This file has previously been found in a 
-                                # sequence; keep whichever is larger.
-                                if len(bi.sequence) > len(previous_bi.sequence):
-                                    usage_index[hi.rel_filepath] = bi
 
         unique_sequences = {
             frozenset(bi.sequence): bi

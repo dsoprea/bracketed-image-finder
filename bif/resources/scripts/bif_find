@@ -54,7 +54,17 @@ def _main():
 	ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
 
 	root_path = args.path.rstrip(os.sep)
-	bracketed = ba.find_bracketed_images(root_path)
+	
+	# Show progress if we're not printing JSON and our output is not being 
+	# redirected.
+	show_progress = \
+		args.print_as_json is False and \
+		sys.stdout.isatty() is True
+
+	bracketed = \
+		ba.find_bracketed_images(
+			root_path, 
+			show_progress=show_progress)
 
 	# Print the results. Sort the results in order to guarantee ordering for 
 	# the unit-tests.
