@@ -8,6 +8,10 @@ _ASSET_PATH = os.path.join(os.path.dirname(__file__), 'assets')
 
 
 class TestExposureBracketedAnalysis(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        self.maxDiff = None
+        super(TestExposureBracketedAnalysis, self).__init__(*args, **kwargs)
+
     def test_is_float_equal__hit(self):
         ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
         self.assertTrue(ba._is_float_equal(0.1, 0.1))
@@ -34,8 +38,8 @@ class TestExposureBracketedAnalysis(unittest.TestCase):
         actual_bi = ba._check_for_periodic_bracketing_at_tail(history)
         expected_bi = \
             bif.exposure_bracketed._BRACKET_INFO(
-                size=5, 
-                type=bif.exposure_bracketed.BT_PERIODIC, 
+                size=5,
+                type=bif.exposure_bracketed.BT_PERIODIC,
                 sequence=history[-5:])
 
         self.assertTrue(ba._bracketinfo_matches(actual_bi, expected_bi))
@@ -57,8 +61,8 @@ class TestExposureBracketedAnalysis(unittest.TestCase):
         actual_bi = ba._check_for_sequential_bracketing_at_tail(history)
         expected_bi = \
             bif.exposure_bracketed._BRACKET_INFO(
-                size=5, 
-                type=bif.exposure_bracketed.BT_SEQUENTIAL, 
+                size=5,
+                type=bif.exposure_bracketed.BT_SEQUENTIAL,
                 sequence=history[-5:])
 
         self.assertTrue(ba._bracketinfo_matches(actual_bi, expected_bi))
@@ -76,11 +80,11 @@ class TestExposureBracketedAnalysis(unittest.TestCase):
 
         ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
         actual_bi = ba._check_for_periodic_bracketing_at_tail(history)
-        
+
         expected_bi = \
             bif.exposure_bracketed._BRACKET_INFO(
-                size=3, 
-                type=bif.exposure_bracketed.BT_PERIODIC, 
+                size=3,
+                type=bif.exposure_bracketed.BT_PERIODIC,
                 sequence=history[-3:])
 
         ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
@@ -101,8 +105,8 @@ class TestExposureBracketedAnalysis(unittest.TestCase):
         actual_bi = ba._check_for_sequential_bracketing_at_tail(history)
         expected_bi = \
             bif.exposure_bracketed._BRACKET_INFO(
-                size=3, 
-                type=bif.exposure_bracketed.BT_SEQUENTIAL, 
+                size=3,
+                type=bif.exposure_bracketed.BT_SEQUENTIAL,
                 sequence=history[-3:])
 
         self.assertTrue(ba._bracketinfo_matches(actual_bi, expected_bi))
@@ -117,7 +121,7 @@ class TestExposureBracketedAnalysis(unittest.TestCase):
 
     def test_find_bracketed_images(self):
         root_path = os.path.join(_ASSET_PATH, 'images')
-        
+
         ba = bif.exposure_bracketed.ExposureBracketedAnalysis()
         groups_raw = ba.find_bracketed_images(root_path)
 
@@ -129,7 +133,7 @@ class TestExposureBracketedAnalysis(unittest.TestCase):
         actual = sorted(actual)
 
         expected = [
-            ('periodic', ['DSC08196.JPG', 'DSC08197.JPG', 'DSC08198.JPG', 'DSC08199.JPG', 'DSC08200.JPG']), 
+            ('periodic', ['DSC08196.JPG', 'DSC08197.JPG', 'DSC08198.JPG', 'DSC08199.JPG', 'DSC08200.JPG']),
             ('periodic', ['DSC08201.JPG', 'DSC08202.JPG', 'DSC08203.JPG', 'DSC08204.JPG', 'DSC08205.JPG']),
         ]
 

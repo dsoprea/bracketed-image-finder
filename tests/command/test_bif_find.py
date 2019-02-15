@@ -10,6 +10,10 @@ _TOOL_FILEPATH = os.path.join(_SCRIPT_PATH, 'bif_find')
 
 
 class TestCommand(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        self.maxDiff = None
+        super(TestCommand, self).__init__(*args, **kwargs)
+
     def test_run__text(self):
         cmd = [_TOOL_FILEPATH, _ASSET_PATH]
         raw = subprocess.check_output(cmd)
@@ -32,21 +36,21 @@ periodic images/DSC08201.JPG images/DSC08202.JPG images/DSC08203.JPG images/DSC0
         expected = [
             {
                 'entries': [
-                    {'exposure_value': 0.0, 'rel_filepath': 'images/DSC08196.JPG', 'timestamp': '2019-02-13T00:31:50'}, 
-                    {'exposure_value': -0.7, 'rel_filepath': 'images/DSC08197.JPG', 'timestamp': '2019-02-13T00:31:50'}, 
-                    {'exposure_value': 0.7, 'rel_filepath': 'images/DSC08198.JPG', 'timestamp': '2019-02-13T00:31:50'}, 
-                    {'exposure_value': -1.3, 'rel_filepath': 'images/DSC08199.JPG', 'timestamp': '2019-02-13T00:31:50'}, 
+                    {'exposure_value': 0.0, 'rel_filepath': 'images/DSC08196.JPG', 'timestamp': '2019-02-13T00:31:50'},
+                    {'exposure_value': -0.7, 'rel_filepath': 'images/DSC08197.JPG', 'timestamp': '2019-02-13T00:31:50'},
+                    {'exposure_value': 0.7, 'rel_filepath': 'images/DSC08198.JPG', 'timestamp': '2019-02-13T00:31:50'},
+                    {'exposure_value': -1.3, 'rel_filepath': 'images/DSC08199.JPG', 'timestamp': '2019-02-13T00:31:50'},
                     {'exposure_value': 1.3, 'rel_filepath': 'images/DSC08200.JPG', 'timestamp': '2019-02-13T00:31:51'}
-                ], 
+                ],
                 'type': 'periodic'
             }, {
                 'entries': [
-                    {'exposure_value': 0.0, 'rel_filepath': 'images/DSC08201.JPG', 'timestamp': '2019-02-13T00:32:09'}, 
-                    {'exposure_value': -0.7, 'rel_filepath': 'images/DSC08202.JPG', 'timestamp': '2019-02-13T00:32:09'}, 
-                    {'exposure_value': 0.7, 'rel_filepath': 'images/DSC08203.JPG', 'timestamp': '2019-02-13T00:32:10'}, 
-                    {'exposure_value': -1.3, 'rel_filepath': 'images/DSC08204.JPG', 'timestamp': '2019-02-13T00:32:10'}, 
+                    {'exposure_value': 0.0, 'rel_filepath': 'images/DSC08201.JPG', 'timestamp': '2019-02-13T00:32:09'},
+                    {'exposure_value': -0.7, 'rel_filepath': 'images/DSC08202.JPG', 'timestamp': '2019-02-13T00:32:09'},
+                    {'exposure_value': 0.7, 'rel_filepath': 'images/DSC08203.JPG', 'timestamp': '2019-02-13T00:32:10'},
+                    {'exposure_value': -1.3, 'rel_filepath': 'images/DSC08204.JPG', 'timestamp': '2019-02-13T00:32:10'},
                     {'exposure_value': 1.3, 'rel_filepath': 'images/DSC08205.JPG', 'timestamp': '2019-02-13T00:32:10'}
-                ], 
+                ],
                 'type': 'periodic'
             }
         ]
