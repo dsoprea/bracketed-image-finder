@@ -55,4 +55,31 @@ periodic images/DSC08201.JPG images/DSC08202.JPG images/DSC08203.JPG images/DSC0
             }
         ]
 
-        self.assertEquals(actual, expected)
+        for group in actual:
+            # Drop the timestamp since the timezone will be localized and
+            # prevents testability.
+            for e in group['entries']:
+                del e['timestamp']
+
+            group['entries'] = sorted(group['entries'], key=lambda x: x['rel_filepath'])
+
+        for group in expected:
+            # Drop the timestamp since the timezone will be localized and
+            # prevents testability.
+            for e in group['entries']:
+                del e['timestamp']
+
+            group['entries'] = sorted(group['entries'], key=lambda x: x['rel_filepath'])
+
+        if actual != expected:
+            print("ACTUAL:\n\n{}\n\nEXPECTED:\n\n{}".format(
+                  get_pretty_json(actual), get_pretty_json(expected)))
+
+            raise Exception("Output not expected.")
+
+def get_pretty_json(data):
+    return json.dumps(
+        data,
+        sort_keys=True,
+        indent=4,
+        separators=(',', ': '))
