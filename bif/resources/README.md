@@ -4,7 +4,7 @@
 
 # Overview
 
-Some cameras support taking bracketed pictures. Bracketing is an operation that rapidly takes a series of pictures with slight variations in situations where the conditions may be tricky or rapidly changing. This allows you to experiment with what the current conditions require or to save time in the present by taking a bunch of pictures that will likely include at least one good one at the expense of having to spend more time later sifting through the extra images.
+Some cameras support taking bracketed pictures. Bracketing is an operation that rapidly takes a series of pictures with slight variations. This can be used for producing HDR pictures as well as allowing you to experiment in situations where the conditions may be tricky or rapidly changing with what the current conditions might require or to save time in the present by taking a bunch of pictures that will likely include at least one good one at the expense of having to spend more time later sifting through the extra images.
 
 This project will recursively scan through the JPEG images under a given path and identify sequential sequences of exposure-bracketed images.
 
